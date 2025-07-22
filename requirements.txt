@@ -2,5 +2,5 @@ streamlit
 torch
 torchvision
 opencv-python
-yolov5==6.0
+yolov5==6.0.7
 pillow
