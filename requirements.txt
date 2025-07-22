@@ -1,6 +1,5 @@
 streamlit
-torch
-torchvision
+torch==1.10.0torchvision
 opencv-python
 yolov5==6.0.7
 pillow
