@@ -28,40 +28,8 @@ except (ImportError, AttributeError):
 
 @st.cache_resource
 def load_model():
-    model_config_path = os.path.join(APP_DIR, 'yolov5s.yaml')
-    model_weights_path = os.path.join(APP_DIR, 'yolov5s_state_dict.pt')
-
-    print(f"--- Debugging Model Loading ---")
-    print(f"APP_DIR: {APP_DIR}")
-    print(f"YOLOV5_PATH: {YOLOV5_PATH}")
-    print(f"model_config_path: {model_config_path}")
-    print(f"model_weights_path: {model_weights_path}")
-    print(f"Does model_config_path exist? {os.path.exists(model_config_path)}")
-    print(f"Does model_weights_path exist? {os.path.exists(model_weights_path)}")
-
-    # yolov5/models ディレクトリの内容をリストアップ (デバッグ用)
-    # このパスは現在使用されていませんが、デバッグのために残します。
-    models_dir = os.path.join(YOLOV5_PATH, 'models')
-    if os.path.exists(models_dir) and os.path.isdir(models_dir):
-        print(f"Contents of {models_dir}: {os.listdir(models_dir)}")
-    else:
-        print(f"{models_dir} does not exist or is not a directory.")
-    print(f"--- End Debugging Model Loading ---")
-
-    try:
-        # モデルのインスタンス化
-        model = Model(cfg=model_config_path)
-
-        # state_dictのロード
-        state_dict = torch.load(model_weights_path, map_location=torch.device('cpu'), weights_only=False)
-        model.load_state_dict(state_dict, strict=False)
-
-        # AutoShapeでラップ
-        model = AutoShape(model)
-        print("Model loaded successfully using direct instantiation and state_dict.")
-    except Exception as e:
-        print(f"Error loading model directly: {e}")
-        raise
+    model = torch.hub.load('ultralytics/yolov5:v6.1', 'yolov5s', pretrained=True, force_reload=True, device='cpu')
+    print("Model loaded successfully using torch.hub.load.")
     
     model.eval()
 

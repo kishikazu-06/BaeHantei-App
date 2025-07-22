@@ -1,1 +1,1 @@
-fix: Add weights_only=False to torch.load
+fix: Regenerate yolov5s_state_dict.pt with correct environment
