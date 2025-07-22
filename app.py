@@ -28,8 +28,8 @@ except (ImportError, AttributeError):
 
 @st.cache_resource
 def load_model():
-    model_config_path = os.path.join(APP_DIR, 'yolov5s.yaml')
-    model_weights_path = os.path.join(APP_DIR, 'yolov5s.pt')
+    model_config_path = os.path.abspath(os.path.join(APP_DIR, 'yolov5s.yaml'))
+    model_weights_path = os.path.abspath(os.path.join(APP_DIR, 'yolov5s.pt'))
 
     print(f"--- Debugging Model Loading ---")
     print(f"APP_DIR: {APP_DIR}")
@@ -223,7 +223,9 @@ def main():
             results = model(np.array(image))
 
             # 総合スコアを計算
+            print("--- Calling calculate_total_sns_score ---")
             score = calculate_total_sns_score(image, results)
+            print("--- Finished calculate_total_sns_score ---")
             
             st.markdown(f"## 総合SNS映えスコア: **{score}** / 100点")
 

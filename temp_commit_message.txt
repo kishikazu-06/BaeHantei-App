@@ -1,1 +1,1 @@
-feat: Confirm yolov5s.yaml placed in BaeHantei directory
+feat: Add debug prints to calculate_instagenic_score
