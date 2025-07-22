@@ -1,1 +1,1 @@
-fix: Try torch.jit.load to resolve pathlib.UnsupportedOperation
+fix: Revert to torch.load with file object and add debug info

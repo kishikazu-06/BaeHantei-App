@@ -26,21 +26,8 @@ except (ImportError, AttributeError):
 
 @st.cache_resource
 def load_model():
-    model_path = os.path.join(APP_DIR, 'yolov5s.pt')
-    print(f"Attempting to load model from: {model_path}")
-
-    if not os.path.exists(model_path):
-        print(f"Error: Model file not found at {model_path}")
-        raise FileNotFoundError(f"Model file not found at {model_path}")
-
-    try:
-        with open(model_path, 'rb') as f:
-            model = torch.load(f, map_location=torch.device('cpu'), weights_only=False)
-        print("Model loaded successfully using torch.load with file object.")
-    except Exception as e:
-        print(f"Error loading model with torch.load (file object): {e}")
-        # Re-raise the original exception to show the full traceback
-        raise
+    model = torch.hub.load('ultralytics/yolov5:v6.1', 'yolov5s', pretrained=True, force_reload=True)
+    print("Model loaded successfully using torch.hub.load.")
     
     model.eval()
 
