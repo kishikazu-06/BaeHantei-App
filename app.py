@@ -7,13 +7,6 @@ from io import BytesIO
 import sys
 import os
 
-# PyTorch 2.6+ のセキュリティ変更に対応
-try:
-    from yolov5.models.common import AutoShape
-    torch.serialization.add_safe_globals([AutoShape])
-except (ImportError, AttributeError):
-    pass
-
 # --- ランタイムとPylanceの両方でyolov5を解決するための設定 ---
 # 1. ランタイムのために、yolov5ディレクトリへの絶対パスをシステムパスに追加
 #    app.pyファイル自身の場所を基準にするため、どこから実行してもパスがずれない
