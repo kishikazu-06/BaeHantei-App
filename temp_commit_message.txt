@@ -1,1 +1,1 @@
-fix: Load yolov5s.pt directly from local file
+feat: Confirm yolov5s.pt placed in BaeHantei directory

@@ -42,12 +42,6 @@ def load_model():
         print(f"Error loading model: {e}")
         raise
     
-    model.eval()
-
-    return model
-    
-    model.eval()
-
     return model
 
 def calculate_brightness_score(image_np):
