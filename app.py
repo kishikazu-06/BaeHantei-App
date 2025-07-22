@@ -144,10 +144,18 @@ def calculate_instagenic_score(detections):
     
     detected_classes = [detections.names[int(cls)] for cls in detections.pred[0][:, -1].cpu().numpy()]
     score = 0
+
+    print("--- Debugging Instagenic Score ---")
+    print(f"Detected classes: {detected_classes}")
+
     for obj in set(detected_classes): # 重複を除外して加算
         if obj in instagenic_objects:
             score += instagenic_objects[obj]
+            print(f"  - {obj}: +{instagenic_objects[obj]} points")
             
+    print(f"Total instagenic score before min(100): {score}")
+    print("--- End Debugging Instagenic Score ---")
+
     return min(score, 100) # スコアの上限を100に設定
 
 def calculate_total_sns_score(image, detections):
