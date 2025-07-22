@@ -1,1 +1,1 @@
-fix: Revert to torch.hub.load and remove local .pt files
+fix: Load yolov5s.pt directly from local file
