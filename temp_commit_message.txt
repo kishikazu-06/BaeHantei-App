@@ -1,1 +1,1 @@
-feat: Add extensive debug prints for FileNotFoundError
+fix: Copy yolov5s.yaml to root and update path in app.py

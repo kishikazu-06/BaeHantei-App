@@ -34,14 +34,14 @@ def load_model():
     print(f"--- Debugging Model Loading ---")
     print(f"APP_DIR: {APP_DIR}")
     print(f"YOLOV5_PATH: {YOLOV5_PATH}")
-    print(f"yolov5_root: {yolov5_root}")
     print(f"model_config_path: {model_config_path}")
     print(f"model_weights_path: {model_weights_path}")
     print(f"Does model_config_path exist? {os.path.exists(model_config_path)}")
     print(f"Does model_weights_path exist? {os.path.exists(model_weights_path)}")
 
-    # yolov5/models ディレクトリの内容をリストアップ
-    models_dir = os.path.join(yolov5_root, 'models')
+    # yolov5/models ディレクトリの内容をリストアップ (デバッグ用)
+    # このパスは現在使用されていませんが、デバッグのために残します。
+    models_dir = os.path.join(YOLOV5_PATH, 'models')
     if os.path.exists(models_dir) and os.path.isdir(models_dir):
         print(f"Contents of {models_dir}: {os.listdir(models_dir)}")
     else:
