@@ -37,7 +37,7 @@ def load_model():
 
     try:
         model = torch.load(model_path, map_location=torch.device('cpu'), weights_only=False)
-        # ロードしたモデルがAutoShapeでラップされていない場合、ラップする
+        # ロードしたモデルがAutoShapeでラップされていない場合のみラップする
         if not isinstance(model, AutoShape):
             model = AutoShape(model)
         print("Model loaded successfully using torch.load.")
