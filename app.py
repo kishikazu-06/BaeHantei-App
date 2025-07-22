@@ -37,6 +37,9 @@ def load_model():
 
     try:
         model = torch.load(model_path, map_location=torch.device('cpu'), weights_only=False)
+        # ロードしたモデルがAutoShapeでラップされていない場合、ラップする
+        if not isinstance(model, AutoShape):
+            model = AutoShape(model)
         print("Model loaded successfully using torch.load.")
     except Exception as e:
         print(f"Error loading model: {e}")

@@ -1,1 +1,1 @@
-feat: Confirm yolov5s.pt placed in BaeHantei directory
+fix: Remove duplicate model.eval() in load_model
