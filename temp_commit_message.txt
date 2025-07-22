@@ -1,1 +1,1 @@
-fix: Re-upload yolov5s.pt to fix EOFError
+fix: Prevent re-wrapping AutoShape model

@@ -28,21 +28,32 @@ except (ImportError, AttributeError):
 
 @st.cache_resource
 def load_model():
-    model_path = os.path.join(APP_DIR, 'yolov5s.pt')
-    print(f"Attempting to load model from: {model_path}")
+    model_config_path = os.path.join(APP_DIR, 'yolov5s.yaml')
+    model_weights_path = os.path.join(APP_DIR, 'yolov5s.pt')
 
-    if not os.path.exists(model_path):
-        print(f"Error: Model file not found at {model_path}")
-        raise FileNotFoundError(f"Model file not found at {model_path}")
+    print(f"Attempting to load model from config: {model_config_path}")
+    print(f"Attempting to load weights from: {model_weights_path}")
+
+    if not os.path.exists(model_config_path):
+        print(f"Error: Model config file not found at {model_config_path}")
+        raise FileNotFoundError(f"Model config file not found at {model_config_path}")
+    if not os.path.exists(model_weights_path):
+        print(f"Error: Model weights file not found at {model_weights_path}")
+        raise FileNotFoundError(f"Model weights file not found at {model_weights_path}")
 
     try:
-        model = torch.load(model_path, map_location=torch.device('cpu'), weights_only=False)
-        # ロードしたモデルがAutoShapeでラップされていない場合のみラップする
-        if not isinstance(model, AutoShape):
-            model = AutoShape(model)
-        print("Model loaded successfully using torch.load.")
+        # モデルのインスタンス化
+        model = Model(cfg=model_config_path)
+
+        # state_dictのロード
+        state_dict = torch.load(model_weights_path, map_location=torch.device('cpu'), weights_only=False)
+        model.load_state_dict(state_dict, strict=False)
+
+        # AutoShapeでラップ
+        model = AutoShape(model)
+        print("Model loaded successfully using direct instantiation and state_dict.")
     except Exception as e:
-        print(f"Error loading model: {e}")
+        print(f"Error loading model directly: {e}")
         raise
     
     return model
