@@ -1,1 +1,1 @@
-feat: Add more debug prints for FileNotFoundError and function calls
+fix: Adjust model paths to reference yolov5 repo directly and remove redundant files
