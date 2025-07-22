@@ -1,1 +1,1 @@
-feat: Direct YOLOv5 model instantiation and state_dict loading
+fix: Resolve Pylance 'Try statement' error and import order
