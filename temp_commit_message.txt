@@ -1,1 +1,1 @@
-fix: Prevent re-wrapping AutoShape model
+fix: Revert to direct Model instantiation and state_dict loading

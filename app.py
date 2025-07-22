@@ -31,8 +31,13 @@ def load_model():
     model_config_path = os.path.join(APP_DIR, 'yolov5s.yaml')
     model_weights_path = os.path.join(APP_DIR, 'yolov5s.pt')
 
-    print(f"Attempting to load model from config: {model_config_path}")
-    print(f"Attempting to load weights from: {model_weights_path}")
+    print(f"--- Debugging Model Loading ---")
+    print(f"APP_DIR: {APP_DIR}")
+    print(f"model_config_path: {model_config_path}")
+    print(f"model_weights_path: {model_weights_path}")
+    print(f"Does model_config_path exist? {os.path.exists(model_config_path)}")
+    print(f"Does model_weights_path exist? {os.path.exists(model_weights_path)}")
+    print(f"--- End Debugging Model Loading ---")
 
     if not os.path.exists(model_config_path):
         print(f"Error: Model config file not found at {model_config_path}")
