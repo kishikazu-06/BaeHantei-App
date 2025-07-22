@@ -6,6 +6,7 @@ import cv2
 from io import BytesIO
 import sys
 import os
+import requests
 
 # --- ランタイムとPylanceの両方でyolov5を解決するための設定 ---
 # 1. ランタイムのために、yolov5ディレクトリへの絶対パスをシステムパスに追加
@@ -31,12 +32,46 @@ def load_model():
     model_config_path = os.path.abspath(os.path.join(YOLOV5_PATH, 'models', 'yolov5s.yaml'))
     model_weights_path = os.path.abspath(os.path.join(YOLOV5_PATH, 'yolov5s.pt'))
 
+    # yolov5s.yamlのダウンロード
+    if not os.path.exists(model_config_path):
+        print(f"Downloading yolov5s.yaml to {model_config_path}")
+        os.makedirs(os.path.dirname(model_config_path), exist_ok=True)
+        url = "https://raw.githubusercontent.com/ultralytics/yolov5/v6.1/models/yolov5s.yaml"
+        r = requests.get(url, allow_redirects=True)
+        with open(model_config_path, 'wb') as f:
+            f.write(r.content)
+        print("yolov5s.yaml downloaded.")
+
+    # yolov5s.ptのダウンロード
+    if not os.path.exists(model_weights_path):
+        print(f"Downloading yolov5s.pt to {model_weights_path}")
+        os.makedirs(os.path.dirname(model_weights_path), exist_ok=True)
+        url = "https://github.com/ultralytics/yolov5/releases/download/v6.1/yolov5s.pt"
+        r = requests.get(url, allow_redirects=True)
+        with open(model_weights_path, 'wb') as f:
+            f.write(r.content)
+        print("yolov5s.pt downloaded.")
+
     print(f"--- Debugging Model Loading ---")
     print(f"APP_DIR: {APP_DIR}")
+    print(f"YOLOV5_PATH: {YOLOV5_PATH}")
     print(f"model_config_path: {model_config_path}")
     print(f"model_weights_path: {model_weights_path}")
     print(f"Does model_config_path exist? {os.path.exists(model_config_path)}")
     print(f"Does model_weights_path exist? {os.path.exists(model_weights_path)}")
+
+    # yolov5ディレクトリの内容をリストアップ (デバッグ用)
+    if os.path.exists(YOLOV5_PATH) and os.path.isdir(YOLOV5_PATH):
+        print(f"Contents of {YOLOV5_PATH}: {os.listdir(YOLOV5_PATH)}")
+    else:
+        print(f"{YOLOV5_PATH} does not exist or is not a directory.")
+
+    # yolov5/models ディレクトリの内容をリストアップ (デバッグ用)
+    models_dir = os.path.join(YOLOV5_PATH, 'models')
+    if os.path.exists(models_dir) and os.path.isdir(models_dir):
+        print(f"Contents of {models_dir}: {os.listdir(models_dir)}")
+    else:
+        print(f"{models_dir} does not exist or is not a directory.")
     print(f"--- End Debugging Model Loading ---")
 
     if not os.path.exists(model_config_path):
