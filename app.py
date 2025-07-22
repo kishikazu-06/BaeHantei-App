@@ -17,7 +17,11 @@ if YOLOV5_PATH not in sys.path:
 
 # PyTorch 2.6+ のセキュリティ変更に対応
 try:
-    from yolov5.models.common import AutoShape
+    from yolov5.models.yolo import Model
+from yolov5.models.common import AutoShape
+
+# PyTorch 2.6+ のセキュリティ変更に対応
+try:
     torch.serialization.add_safe_globals([AutoShape])
 except (ImportError, AttributeError):
     pass
@@ -26,8 +30,26 @@ except (ImportError, AttributeError):
 
 @st.cache_resource
 def load_model():
-    model = torch.hub.load('ultralytics/yolov5:v6.1', 'yolov5s', pretrained=True, force_reload=True, device='cpu')
-    print("Model loaded successfully using torch.hub.load.")
+    model_config_path = os.path.join(APP_DIR, 'yolov5', 'models', 'yolov5s.yaml')
+    model_weights_path = os.path.join(APP_DIR, 'yolov5s.pt')
+
+    print(f"Loading model from config: {model_config_path}")
+    print(f"Loading weights from: {model_weights_path}")
+
+    try:
+        # モデルのインスタンス化
+        model = Model(cfg=model_config_path)
+
+        # state_dictのロード
+        state_dict = torch.load(model_weights_path, map_location=torch.device('cpu'))
+        model.load_state_dict(state_dict, strict=False)
+
+        # AutoShapeでラップ
+        model = AutoShape(model)
+        print("Model loaded successfully using direct instantiation and state_dict.")
+    except Exception as e:
+        print(f"Error loading model directly: {e}")
+        raise
     
     model.eval()
 
