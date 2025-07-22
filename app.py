@@ -29,7 +29,7 @@ except (ImportError, AttributeError):
 @st.cache_resource
 def load_model():
     model_config_path = os.path.join(APP_DIR, 'yolov5s.yaml')
-    model_weights_path = os.path.join(APP_DIR, 'yolov5s.pt')
+    model_weights_path = os.path.join(APP_DIR, 'yolov5s_state_dict.pt')
 
     print(f"--- Debugging Model Loading ---")
     print(f"APP_DIR: {APP_DIR}")

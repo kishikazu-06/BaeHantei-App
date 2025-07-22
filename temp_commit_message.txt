@@ -1,1 +1,1 @@
-fix: Copy yolov5s.yaml to root and update path in app.py
+fix: Resolve Pylance 'yolov5_root' undefined error
