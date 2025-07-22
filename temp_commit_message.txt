@@ -1,1 +1,1 @@
-fix: Revert to torch.hub.load to resolve pathlib.UnsupportedOperation
+fix: Align yolov5 version in requirements.txt with torch.hub.load

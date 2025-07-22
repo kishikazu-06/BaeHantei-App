@@ -26,7 +26,7 @@ except (ImportError, AttributeError):
 
 @st.cache_resource
 def load_model():
-    model = torch.hub.load('ultralytics/yolov5:v6.1', 'yolov5s', pretrained=True, force_reload=True)
+    model = torch.hub.load('ultralytics/yolov5:v6.1', 'yolov5s', pretrained=True, force_reload=True, device='cpu')
     print("Model loaded successfully using torch.hub.load.")
     
     model.eval()
