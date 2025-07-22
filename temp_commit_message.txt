@@ -1,1 +1,1 @@
-fix: Resolve Pylance 'Try statement' error and import order
+fix: Improve yolov5s.yaml path resolution in load_model

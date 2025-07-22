@@ -33,8 +33,22 @@ def load_model():
     model_config_path = os.path.join(yolov5_root, 'models', 'yolov5s.yaml')
     model_weights_path = os.path.join(APP_DIR, 'yolov5s.pt')
 
-    print(f"Loading model from config: {model_config_path}")
-    print(f"Loading weights from: {model_weights_path}")
+    print(f"--- Debugging Model Loading ---")
+    print(f"APP_DIR: {APP_DIR}")
+    print(f"YOLOV5_PATH: {YOLOV5_PATH}")
+    print(f"yolov5_root: {yolov5_root}")
+    print(f"model_config_path: {model_config_path}")
+    print(f"model_weights_path: {model_weights_path}")
+    print(f"Does model_config_path exist? {os.path.exists(model_config_path)}")
+    print(f"Does model_weights_path exist? {os.path.exists(model_weights_path)}")
+
+    # yolov5/models ディレクトリの内容をリストアップ
+    models_dir = os.path.join(yolov5_root, 'models')
+    if os.path.exists(models_dir) and os.path.isdir(models_dir):
+        print(f"Contents of {models_dir}: {os.listdir(models_dir)}")
+    else:
+        print(f"{models_dir} does not exist or is not a directory.")
+    print(f"--- End Debugging Model Loading ---")
 
     try:
         # モデルのインスタンス化
