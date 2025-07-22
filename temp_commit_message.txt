@@ -1,1 +1,1 @@
-fix: Handle pathlib.UnsupportedOperation in torch.load
+fix: Try torch.jit.load to resolve pathlib.UnsupportedOperation
