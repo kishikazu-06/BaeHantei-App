@@ -28,9 +28,7 @@ except (ImportError, AttributeError):
 
 @st.cache_resource
 def load_model():
-    # YOLOv5リポジトリのルートパスを特定
-    yolov5_root = os.path.join(APP_DIR, 'yolov5')
-    model_config_path = os.path.join(yolov5_root, 'models', 'yolov5s.yaml')
+    model_config_path = os.path.join(APP_DIR, 'yolov5s.yaml')
     model_weights_path = os.path.join(APP_DIR, 'yolov5s.pt')
 
     print(f"--- Debugging Model Loading ---")
