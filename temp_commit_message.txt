@@ -1,1 +1,1 @@
-fix: Revert to torch.load with file object and add debug info
+fix: Revert to torch.hub.load to resolve pathlib.UnsupportedOperation

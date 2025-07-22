@@ -2,5 +2,5 @@ streamlit
 torch==2.7.0
 torchvision==0.22.0
 opencv-python
-yolov5==7.0.0
+yolov5==6.1.0
 pillow
