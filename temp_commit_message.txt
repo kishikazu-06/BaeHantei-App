@@ -1,1 +1,1 @@
-fix: Load yolov5s_state_dict.pt instead of yolov5s.pt
+fix: Move add_safe_globals outside of cached function

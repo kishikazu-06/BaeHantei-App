@@ -53,7 +53,7 @@ def load_model():
         model = Model(cfg=model_config_path)
 
         # state_dictのロード
-        state_dict = torch.load(model_weights_path, map_location=torch.device('cpu'))
+        state_dict = torch.load(model_weights_path, map_location=torch.device('cpu'), weights_only=False)
         model.load_state_dict(state_dict, strict=False)
 
         # AutoShapeでラップ
