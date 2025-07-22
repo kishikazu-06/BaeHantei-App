@@ -257,6 +257,14 @@ def main():
             model = load_model()
             results = model(np.array(image))
 
+            print("--- Debugging Detection Results ---")
+            print(f"Raw detection results: {results}")
+            if hasattr(results, 'pred') and len(results.pred) > 0:
+                print(f"Number of detected objects: {len(results.pred[0])}")
+            else:
+                print("No 'pred' attribute or empty in detection results.")
+            print("--- End Debugging Detection Results ---")
+
             # 総合スコアを計算
             print("--- Calling calculate_total_sns_score ---")
             score = calculate_total_sns_score(image, results)

@@ -1,1 +1,1 @@
-fix: Adjust model paths to reference yolov5 repo directly and remove redundant files
+feat: Download yolov5s.yaml and yolov5s.pt if not found
