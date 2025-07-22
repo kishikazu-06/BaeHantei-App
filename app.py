@@ -29,8 +29,7 @@ def load_model():
     model_path = os.path.join(APP_DIR, 'yolov5s.pt')
     print(f"Loading model from: {model_path}")
     try:
-        with open(model_path, 'rb') as f:
-            model = torch.load(f, map_location=torch.device('cpu'), weights_only=False)
+        model = torch.jit.load(model_path, map_location=torch.device('cpu'))
     except Exception as e:
         print(f"Error loading model: {e}")
         raise
