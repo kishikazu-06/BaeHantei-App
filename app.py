@@ -4,11 +4,12 @@ import torch
 import numpy as np
 import cv2
 from io import BytesIO
+import yolov5 # ← これを追加
 
 @st.cache_resource
 def load_model():
-    #YOLOv5モデルをロードしてキャッシュする
-    model = torch.hub.load('ultralytics/yolov5', 'custom', path='yolov5s.pt', force_reload=True)
+    # YOLOv5モデルをローカルファイルから直接ロードする
+    model = yolov5.load('yolov5s.pt')
     return model
 
 def calculate_brightness_score(image_np):
