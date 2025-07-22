@@ -15,9 +15,7 @@ YOLOV5_PATH = os.path.join(APP_DIR, 'yolov5')
 if YOLOV5_PATH not in sys.path:
     sys.path.append(YOLOV5_PATH)
 
-# PyTorch 2.6+ のセキュリティ変更に対応
-try:
-    from yolov5.models.yolo import Model
+from yolov5.models.yolo import Model
 from yolov5.models.common import AutoShape
 
 # PyTorch 2.6+ のセキュリティ変更に対応
