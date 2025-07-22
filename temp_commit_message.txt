@@ -1,1 +1,1 @@
-fix: Adjust model paths to reference yolov5 repo directly and remove redundant files
+fix: Re-add yolov5s.yaml to BaeHantei root
