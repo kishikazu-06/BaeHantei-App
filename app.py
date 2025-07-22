@@ -10,7 +10,7 @@ from yolov5 import models # ← ここを修正
 def load_model():
     # YOLOv5モデルのアーキテクチャを再構築
     # pretrained=Falseで、重みはロードしない
-    model = models.common.DetectMultiBackend('yolov5s.pt', pretrained=False) # ← ここを修正
+    model = models.common.DetectMultiBackend(weights='yolov5s.pt') # ← ここを修正
 
     # state_dictをロード
     model.load_state_dict(torch.load('yolov5s_state.pt', map_location=torch.device('cpu'))) # ← ここを修正
