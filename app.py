@@ -4,16 +4,12 @@ import torch
 import numpy as np
 import cv2
 from io import BytesIO
-from yolov5 import models # ← ここを修正
+from yolov5 import models
 
 @st.cache_resource
 def load_model():
-    # YOLOv5モデルのアーキテクチャを再構築
-    # pretrained=Falseで、重みはロードしない
-    model = models.common.DetectMultiBackend(weights='yolov5s.pt') # ← ここを修正
-
-    # state_dictをロード
-    model.load_state_dict(torch.load('yolov5s_state.pt', map_location=torch.device('cpu'))) # ← ここを修正
+    # YOLOv5モデルの読み込み
+    model = torch.hub.load('ultralytics/yolov5', 'custom', path='yolov5s.pt')
     model.eval() # モデルを評価モードに設定
 
     return model
