@@ -4,13 +4,40 @@ import torch
 import numpy as np
 import cv2
 from io import BytesIO
-from yolov5 import models
+import sys
+import os
+
+# PyTorch 2.6+ のセキュリティ変更に対応
+try:
+    from yolov5.models.common import AutoShape
+    torch.serialization.add_safe_globals([AutoShape])
+except (ImportError, AttributeError):
+    pass
+
+# --- ランタイムとPylanceの両方でyolov5を解決するための設定 ---
+# 1. ランタイムのために、yolov5ディレクトリへの絶対パスをシステムパスに追加
+#    app.pyファイル自身の場所を基準にするため、どこから実行してもパスがずれない
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+YOLOV5_PATH = os.path.join(APP_DIR, 'yolov5')
+if YOLOV5_PATH not in sys.path:
+    sys.path.append(YOLOV5_PATH)
+
+# PyTorch 2.6+ のセキュリティ変更に対応
+try:
+    from yolov5.models.common import AutoShape
+    torch.serialization.add_safe_globals([AutoShape])
+except (ImportError, AttributeError):
+    pass
+
+# 2. Pylanceのために、.vscode/settings.json に "python.analysis.extraPaths": ["./yolov5"] を設定済み
 
 @st.cache_resource
 def load_model():
-    # YOLOv5モデルの読み込み
-    model = torch.hub.load('ultralytics/yolov5', 'custom', path='yolov5s.pt')
-    model.eval() # モデルを評価モードに設定
+    model_path = os.path.join(APP_DIR, 'yolov5s.pt')
+    print(f"Loading model from: {model_path}")
+    model = torch.load(model_path, map_location=torch.device('cpu'), weights_only=False)
+    
+    model.eval()
 
     return model
 
