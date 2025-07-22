@@ -1,5 +1,5 @@
 streamlit
-torch==1.10.0
+torch==2.5.0
 torchvision
 opencv-python
 yolov5==6.0.7
