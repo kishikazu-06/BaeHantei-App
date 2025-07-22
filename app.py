@@ -8,7 +8,7 @@ from io import BytesIO
 @st.cache_resource
 def load_model():
     #YOLOv5モデルをロードしてキャッシュする
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+    model = torch.hub.load('ultralytics/yolov5', 'custom', path='yolov5s.pt', force_reload=True)
     return model
 
 def calculate_brightness_score(image_np):
