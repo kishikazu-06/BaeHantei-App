@@ -1,1 +1,1 @@
-feat: Download yolov5s.yaml and yolov5s.pt if not found
+feat: Add debug prints for detection results in main function

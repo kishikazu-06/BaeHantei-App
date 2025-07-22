@@ -91,6 +91,7 @@ def load_model():
 
         # AutoShapeでラップ
         model = AutoShape(model)
+        model.conf = 0.1 # 信頼度閾値を調整
         print("Model loaded successfully using direct instantiation and state_dict.")
     except Exception as e:
         print(f"Error loading model directly: {e}")
