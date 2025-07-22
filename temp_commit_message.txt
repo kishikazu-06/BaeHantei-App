@@ -1,1 +1,1 @@
-fix: Regenerate yolov5s_state_dict.pt with correct environment
+fix: Revert to torch.hub.load and remove local .pt files
