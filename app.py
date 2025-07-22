@@ -9,7 +9,7 @@ import yolov5 # ← これを追加
 @st.cache_resource
 def load_model():
     # YOLOv5モデルをローカルファイルから直接ロードする
-    model = yolov5.load('yolov5s.pt')
+    model = torch.load('yolov5s.pt', map_location=torch.device('cpu'))
     return model
 
 def calculate_brightness_score(image_np):
