@@ -1,1 +1,1 @@
-feat: Add debug prints for detection results in main function
+fix: Adjust YOLOv5 confidence threshold to 0.1

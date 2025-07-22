@@ -90,9 +90,16 @@ def load_model():
         model.load_state_dict(state_dict, strict=False)
 
         # AutoShapeでラップ
-        model = AutoShape(model)
+        # AutoShapeでラップ
+        if not isinstance(model, AutoShape):
+            model = AutoShape(model)
         model.conf = 0.1 # 信頼度閾値を調整
-        print("Model loaded successfully using direct instantiation and state_dict.")
+        print("Model loaded successfully using torch.load.")
+        print(f"Type of loaded model: {type(model)}")
+        if hasattr(model, 'names'):
+            print(f"Model class names: {model.names}")
+        else:
+            print("Model has no 'names' attribute.")
     except Exception as e:
         print(f"Error loading model directly: {e}")
         raise
