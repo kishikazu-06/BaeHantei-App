@@ -1,1 +1,7 @@
 commit_message.txt
+
+# Ignore yolov5 submodule contents, except for explicitly tracked files
+yolov5/*
+!yolov5/yolov5s.pt
+!yolov5/models/
+!yolov5/models/yolov5s.yaml
