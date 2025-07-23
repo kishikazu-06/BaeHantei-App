@@ -279,7 +279,23 @@ def main():
 
         with st.spinner('AIが画像を分析中です...'):
             model = load_model()
-            results = model(np.array(image))
+
+            # 推論前の画像データとモデルパラメータのデバッグ
+            image_np_for_inference = np.array(image)
+            print("--- Debugging Image and Model Parameters before Inference ---")
+            print(f"Image numpy array shape: {image_np_for_inference.shape}")
+            print(f"Image numpy array dtype: {image_np_for_inference.dtype}")
+            print(f"Image numpy array min value: {image_np_for_inference.min()}")
+            print(f"Image numpy array max value: {image_np_for_inference.max()}")
+            print(f"Model confidence threshold (model.conf): {model.conf}")
+            if hasattr(model, 'iou'):
+                print(f"Model IoU threshold (model.iou): {model.iou}")
+            else:
+                print("Model has no 'iou' attribute (using default).")
+            print(f"Model training mode (model.training): {model.training}")
+            print("--- End Debugging Image and Model Parameters before Inference ---")
+
+            results = model(image_np_for_inference)
 
             print("--- Debugging Detection Results ---")
             print(f"Raw detection results: {results}")
