@@ -43,27 +43,26 @@ def load_model():
         print("yolov5s.yaml downloaded.")
 
     # yolov5s.ptのダウンロード
-    if not os.path.exists(model_weights_path):
-        print(f"Downloading yolov5s.pt to {model_weights_path}")
-        os.makedirs(os.path.dirname(model_weights_path), exist_ok=True)
-        url = "https://github.com/ultralytics/yolov5/releases/download/v6.1/yolov5s.pt"
-        try:
-            r = requests.get(url, allow_redirects=True, timeout=10) # タイムアウトを10秒に設定
-            r.raise_for_status() # HTTPエラーが発生した場合に例外を発生させる
-            with open(model_weights_path, 'wb') as f:
-                f.write(r.content)
-            print("yolov5s.pt downloaded successfully.")
-        except requests.exceptions.RequestException as e:
-            print(f"Error downloading yolov5s.pt: {e}")
-            print(f"Please check your internet connection or the URL: {url}")
-            raise # エラーを再発生させて処理を中断
-        except IOError as e:
-            print(f"Error writing yolov5s.pt to disk: {e}")
-            print(f"Please check write permissions for {model_weights_path}")
-            raise # エラーを再発生させて処理を中断
-        except Exception as e:
-            print(f"An unexpected error occurred during yolov5s.pt download: {e}")
-            raise # エラーを再発生させて処理を中断
+    print(f"Downloading yolov5s.pt to {model_weights_path}")
+    os.makedirs(os.path.dirname(model_weights_path), exist_ok=True)
+    url = "https://github.com/ultralytics/yolov5/releases/download/v6.1/yolov5s.pt"
+    try:
+        r = requests.get(url, allow_redirects=True, timeout=10) # タイムアウトを10秒に設定
+        r.raise_for_status() # HTTPエラーが発生した場合に例外を発生させる
+        with open(model_weights_path, 'wb') as f:
+            f.write(r.content)
+        print("yolov5s.pt downloaded successfully.")
+    except requests.exceptions.RequestException as e:
+        print(f"Error downloading yolov5s.pt: {e}")
+        print(f"Please check your internet connection or the URL: {url}")
+        raise # エラーを再発生させて処理を中断
+    except IOError as e:
+        print(f"Error writing yolov5s.pt to disk: {e}")
+        print(f"Please check write permissions for {model_weights_path}")
+        raise # エラーを再発生させて処理を中断
+    except Exception as e:
+        print(f"An unexpected error occurred during yolov5s.pt download: {e}")
+        raise # エラーを再発生させて処理を中断
 
     print(f"--- Debugging Model Loading ---")
     print(f"APP_DIR: {APP_DIR}")
