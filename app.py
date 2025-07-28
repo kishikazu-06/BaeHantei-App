@@ -98,14 +98,11 @@ def calculate_composition_score(detections, image_shape):
 def calculate_instagenic_score(detections):
     #「映え」やすい被写体を評価する
     instagenic_objects = {
-        # --- スコアを全体的に甘く調整 ---
         "person": 15, "cat": 30, "dog": 30, "bird": 20, 
         "cake": 35, "pizza": 30, "donut": 30, "wine glass": 25,
         "car": 20, "bicycle": 15, "boat": 20,
         "bench": 10, "handbag": 15, "suitcase": 10,
         "sports ball": 15, "surfboard": 30,
-        
-        # --- 新しく「映え」オブジェクトを追加 ---
         "apple": 15, "orange": 15, "banana": 10, "sandwich": 20, "hot dog": 20,
         "cup": 15, "fork": 10, "knife": 10, "spoon": 10, "bowl": 15,
         "bed": 10, "dining table": 20, "laptop": 10, "mouse": 5, "remote": 5,
@@ -264,8 +261,8 @@ def calculate_total_sns_score(image, detections):
 
 def get_rank(score):
     #総合スコアに応じてランクを返す(さらに甘めの採点)
-    if score >= 75:
-        return "S（神レベルの映え写真！）"
+    if score >= 80:
+        return "S（ハイレベルの映え写真！）"
     elif score >= 60:
         return "A（かなり映えてます！）"
     elif score >= 45:
@@ -317,7 +314,7 @@ def main():
 
             # 総合スコアを計算
             print("--- Calling calculate_total_sns_score ---")
-            score = calculate_total_sns_score(image, results)
+            score = calculate_total_sns_score(image, results)+10
             print("--- Finished calculate_total_sns_score ---")
             
             st.markdown(f"## 総合SNS映えスコア: **{score}** / 100点")
