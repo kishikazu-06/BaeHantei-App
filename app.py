@@ -130,6 +130,86 @@ def calculate_instagenic_score(detections):
 
     return min(score, 100) # スコアの上限を100に設定
 
+def calculate_sharpness_score(image_np):
+    """画像の鮮明さ（シャープネス）を評価する"""
+    gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
+    laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+    # 閾値は経験的に調整。100以上ならかなりシャープ。スコアが過剰に高くならないよう調整
+    score = min(laplacian_var / 2.0, 100) 
+    return score
+
+def calculate_color_harmony_score(image_np):
+    """画像の色彩調和を評価する"""
+    hsv = cv2.cvtColor(image_np, cv2.COLOR_RGB2HSV)
+    # 彩度の標準偏差と色相の標準偏差を評価
+    # 彩度が高い色と低い色が混在していると鮮やか
+    saturation_std = np.std(hsv[..., 1])
+    # 色相に多様性があるか
+    hue_std = np.std(hsv[..., 0])
+    
+    # スコアを正規化。これらの値は経験的な調整が必要
+    saturation_score = min(saturation_std * 1.5, 100)
+    hue_score = min(hue_std, 100) # Hueの標準偏差は多様性を示す
+    
+    # 2つのスコアを平均
+    return (saturation_score + hue_score) / 2
+
+def calculate_bokeh_score(image_np, detections):
+    """背景のボケ感を評価する"""
+    if len(detections.pred[0]) == 0:
+        return 0 # 物体がない場合は評価しない
+
+    gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
+    h, w = gray.shape
+
+    # 前景マスク（検出された物体の領域）を作成
+    foreground_mask = np.zeros((h, w), dtype=np.uint8)
+    for *xyxy, conf, cls in detections.pred[0]:
+        x1, y1, x2, y2 = map(int, xyxy)
+        foreground_mask[y1:y2, x1:x2] = 255
+    
+    # 背景マスク
+    background_mask = cv2.bitwise_not(foreground_mask)
+
+    # マスクされた領域のピクセル数をチェック
+    if np.sum(foreground_mask) == 0 or np.sum(background_mask) < 100: # 背景が小さすぎる場合は評価しない
+        return 0
+
+    # 各領域のシャープネス（ラプラシアンの分散）を計算
+    #前景が複数の場合があるので、前景全体のシャープネスを計算
+    fg_sharpness = cv2.Laplacian(cv2.bitwise_and(gray, gray, mask=foreground_mask), cv2.CV_64F).var()
+    bg_sharpness = cv2.Laplacian(cv2.bitwise_and(gray, gray, mask=background_mask), cv2.CV_64F).var()
+
+    # 前景が背景よりどれだけシャープか
+    if bg_sharpness < 1: # 背景が真っ黒など分散が0に近い場合
+        bg_sharpness = 1
+        
+    ratio = fg_sharpness / bg_sharpness
+    
+    # ratioが大きいほどボケ感が強い
+    # 5倍以上シャープなら満点とするなど、経験的に調整
+    score = min((ratio / 5) * 100, 100)
+    return score
+
+def calculate_face_score(image_np):
+    """顔と笑顔を検出し評価する"""
+    gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
+    
+    # 顔検出器をロード
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    # 注: 笑顔検出はより複雑で、別のモデル(haarcascade_smile.xml)や高度な手法が必要になるため、
+    # ここではまず顔の検出に絞って実装します。
+
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+    if len(faces) == 0:
+        return 0
+
+    # 顔が検出されたら、その数に応じてスコアを加算（上限あり）
+    # ここでは、顔が1つでも検出されれば高めのスコアを与える
+    score = 25 + (len(faces) - 1) * 5 # 1人目は25点、2人目以降は+5点
+    return min(score, 50) # 上限を50点に
+
 def calculate_total_sns_score(image, detections):
     #各評価項目のスコアを計算し、重み付けして総合スコアを算出する
     image_np = np.array(image)
@@ -139,28 +219,45 @@ def calculate_total_sns_score(image, detections):
     saturation_score = calculate_saturation_score(image_np)
     composition_score = calculate_composition_score(detections, image_np.shape)
     instagenic_score = calculate_instagenic_score(detections)
+    sharpness_score = calculate_sharpness_score(image_np)
+    color_harmony_score = calculate_color_harmony_score(image_np)
+    bokeh_score = calculate_bokeh_score(image_np, detections)
+    # --- 顔検出スコアを追加 ---
+    face_score = calculate_face_score(image_np)
 
-    # --- 各項目の重み付け ---
+    # --- 各項目の重み付けを調整 ---
     weights = {
-        "composition": 0.4,
-        "saturation": 0.3,
-        "instagenic": 0.2,
-        "brightness": 0.1
+        "composition": 0.20,   # 構図
+        "instagenic": 0.20,    # 被写体
+        "face_score": 0.20,    # 顔 (新規)
+        "color_harmony": 0.15, # 色彩調和
+        "bokeh": 0.10,         # ボケ感
+        "saturation": 0.05,    # 彩度
+        "sharpness": 0.05,     # 鮮明さ
+        "brightness": 0.05     # 明るさ
     }
 
     # --- 重み付けした総合スコアを計算 ---
     total_score = (
         composition_score * weights["composition"] +
-        saturation_score * weights["saturation"] +
         instagenic_score * weights["instagenic"] +
+        face_score * weights["face_score"] +
+        color_harmony_score * weights["color_harmony"] +
+        bokeh_score * weights["bokeh"] +
+        saturation_score * weights["saturation"] +
+        sharpness_score * weights["sharpness"] +
         brightness_score * weights["brightness"]
     )
 
     # --- 採点内訳をUIに表示 ---
     st.markdown("### 採点内訳")
     st.markdown(f"- **構図** (日の丸/三分割法): **{composition_score:.1f}** / 100 点")
-    st.markdown(f"- **色彩の鮮やかさ**: **{saturation_score:.1f}** / 100 点")
     st.markdown(f"- **被写体の魅力**: **{instagenic_score:.1f}** / 100 点")
+    st.markdown(f"- **人物・表情**: **{face_score:.1f}** / 100 点")
+    st.markdown(f"- **色彩の調和**: **{color_harmony_score:.1f}** / 100 点")
+    st.markdown(f"- **背景のボケ感**: **{bokeh_score:.1f}** / 100 点")
+    st.markdown(f"- **色彩の鮮やかさ**: **{saturation_score:.1f}** / 100 点")
+    st.markdown(f"- **写真の鮮明さ**: **{sharpness_score:.1f}** / 100 点")
     st.markdown(f"- **全体の明るさ**: **{brightness_score:.1f}** / 100 点")
 
     return round(total_score)
