@@ -1,1 +1,1 @@
-feat: Add debug prints to verify model loading and class names
+Add ultralytics to requirements.txt
