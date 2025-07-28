@@ -12,10 +12,9 @@ def load_model():
     # 'ultralytics/yolov5' はGitHubリポジトリ、'yolov5s' はモデル名、pretrained=Trueは事前学習済みモデルを使用することを示します。
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True, trust_repo=True)
     
-    # モデルを評価モードに設定
-    model.eval()
-    model.conf = 0.05 # 信頼度閾値を調整
-    model.iou = 0.01 # NMSのIoU閾値を調整 (デバッグ用)
+    model.eval() # モデルを評価モードに設定
+    model.conf = 0.25 # 信頼度閾値を調整
+    model.iou = 0.01 # NMSのIoU閾値を調整 
 
     # モデルがロードされたことを確認するためのデバッグ出力
     print("Model loaded successfully using torch.hub.load.")
@@ -24,27 +23,28 @@ def load_model():
         print(f"Model class names: {model.names}")
     else:
         print("Model has no 'names' attribute.")
+    # モデルがロードされたことを確認するためのデバッグ出力
     
     return model
 
 def calculate_brightness_score(image_np):
     #画像の明るさを評価
-    gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
-    brightness = np.mean(gray)  # 0-255
+    gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)#グレースケールに変換
+    brightness = np.mean(gray)  # 0-255　グレースケール画像全体の平均輝度を計算し、画像の全体的な明るさの指標とします。
     return brightness / 2.55  # 0-100のスコアに正規化
 
 def calculate_saturation_score(image_np):
-    #画像の色彩の鮮やかさ（彩度）を評価し、0-100のスコアを返す
-    hsv = cv2.cvtColor(image_np, cv2.COLOR_RGB2HSV)
-    saturation = np.mean(hsv[..., 1])  # Sチャネル (0-255)
+    #画像の色彩の鮮やかさ（彩度）を評価
+    hsv = cv2.cvtColor(image_np, cv2.COLOR_RGB2HSV)#HSVに変換
+    saturation = np.mean(hsv[..., 1])  # Sチャネル (0-255)　HSV画像から彩度（S）チャネルのみを抽出し、その平均値を計算して画像の全体的な彩度を評価します。
     return saturation / 2.55  # 0-100に正規化
 
 def calculate_center_composition_score(detections, image_shape):
     #被写体が中央に配置されている構図（日の丸構図）を評価する
-    h, w, _ = image_shape
-    center_x, center_y = w / 2, h / 2
+    h, w, _ = image_shape #高さと幅のみを取得
+    center_x, center_y = w / 2, h / 2#画像の中心座標
     
-    if len(detections.pred[0]) == 0:
+    if len(detections.pred[0]) == 0:#物体検出の有無
         return 0
 
     total_proximity = 0
@@ -98,12 +98,20 @@ def calculate_composition_score(detections, image_shape):
 def calculate_instagenic_score(detections):
     #「映え」やすい被写体を評価する
     instagenic_objects = {
-        "person": 10, "cat": 20, "dog": 20, "bird": 15,
-        "cake": 25, "pizza": 20, "donut": 20, "wine glass": 15,
-        "car": 15, "bicycle": 10, "boat": 15,
-        "bench": 5, "handbag": 10, "suitcase": 5,
-        "sports ball": 10, "surfboard": 20,
-        # YOLOv5のデフォルトクラスに合わせて調整
+        # --- スコアを全体的に甘く調整 ---
+        "person": 15, "cat": 30, "dog": 30, "bird": 20, 
+        "cake": 35, "pizza": 30, "donut": 30, "wine glass": 25,
+        "car": 20, "bicycle": 15, "boat": 20,
+        "bench": 10, "handbag": 15, "suitcase": 10,
+        "sports ball": 15, "surfboard": 30,
+        
+        # --- 新しく「映え」オブジェクトを追加 ---
+        "apple": 15, "orange": 15, "banana": 10, "sandwich": 20, "hot dog": 20,
+        "cup": 15, "fork": 10, "knife": 10, "spoon": 10, "bowl": 15,
+        "bed": 10, "dining table": 20, "laptop": 10, "mouse": 5, "remote": 5,
+        "keyboard": 5, "cell phone": 15, "microwave": 5, "oven": 5, "toaster": 5,
+        "sink": 5, "refrigerator": 5, "book": 15, "clock": 15, "vase": 25,
+        "scissors": 5, "teddy bear": 35, "potted plant": 20, "tv": 10,
     }
     
     detected_classes = [detections.names[int(cls)] for cls in detections.pred[0][:, -1].cpu().numpy()]
@@ -158,14 +166,14 @@ def calculate_total_sns_score(image, detections):
     return round(total_score)
 
 def get_rank(score):
-    #総合スコアに応じてランクを返す
-    if score >= 90:
+    #総合スコアに応じてランクを返す(甘めの採点)
+    if score >= 85:
         return "S（神レベルの映え写真！）"
-    elif score >= 75:
+    elif score >= 70:
         return "A（かなり映えてます！）"
-    elif score >= 60:
+    elif score >= 55:
         return "B（良い感じの映え写真）"
-    elif score >= 45:
+    elif score >= 40:
         return "C（まあまあ映えてます）"
     else:
         return "D（もう少し工夫してみよう）"
