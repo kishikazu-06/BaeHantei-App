@@ -135,7 +135,7 @@ def calculate_sharpness_score(image_np):
     gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
     laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
     # 閾値は経験的に調整。100以上ならかなりシャープ。スコアが過剰に高くならないよう調整
-    score = min(laplacian_var / 2.0, 100) 
+    score = min(laplacian_var * 1.0, 100) 
     return score
 
 def calculate_color_harmony_score(image_np):
@@ -148,8 +148,8 @@ def calculate_color_harmony_score(image_np):
     hue_std = np.std(hsv[..., 0])
     
     # スコアを正規化。これらの値は経験的な調整が必要
-    saturation_score = min(saturation_std * 1.5, 100)
-    hue_score = min(hue_std, 100) # Hueの標準偏差は多様性を示す
+    saturation_score = min(saturation_std * 2.5, 100)
+    hue_score = min(hue_std * 1.5, 100) # Hueの標準偏差は多様性を示す
     
     # 2つのスコアを平均
     return (saturation_score + hue_score) / 2
@@ -187,8 +187,8 @@ def calculate_bokeh_score(image_np, detections):
     ratio = fg_sharpness / bg_sharpness
     
     # ratioが大きいほどボケ感が強い
-    # 5倍以上シャープなら満点とするなど、経験的に調整
-    score = min((ratio / 5) * 100, 100)
+    # 2倍以上シャープなら満点とするなど、経験的に調整
+    score = min((ratio / 2) * 100, 100)
     return score
 
 def calculate_face_score(image_np):
@@ -207,8 +207,8 @@ def calculate_face_score(image_np):
 
     # 顔が検出されたら、その数に応じてスコアを加算（上限あり）
     # ここでは、顔が1つでも検出されれば高めのスコアを与える
-    score = 25 + (len(faces) - 1) * 5 # 1人目は25点、2人目以降は+5点
-    return min(score, 50) # 上限を50点に
+    score = 40 + (len(faces) - 1) * 15 # 1人目は40点、2人目以降は+15点
+    return min(score, 80) # 上限を80点に
 
 def calculate_total_sns_score(image, detections):
     #各評価項目のスコアを計算し、重み付けして総合スコアを算出する
@@ -227,11 +227,11 @@ def calculate_total_sns_score(image, detections):
 
     # --- 各項目の重み付けを調整 ---
     weights = {
-        "composition": 0.20,   # 構図
-        "instagenic": 0.20,    # 被写体
-        "face_score": 0.20,    # 顔 (新規)
-        "color_harmony": 0.15, # 色彩調和
-        "bokeh": 0.10,         # ボケ感
+        "composition": 0.25,   # 構図
+        "instagenic": 0.25,    # 被写体
+        "face_score": 0.25,    # 顔 (新規)
+        "color_harmony": 0.10, # 色彩調和
+        "bokeh": 0.05,         # ボケ感
         "saturation": 0.05,    # 彩度
         "sharpness": 0.05,     # 鮮明さ
         "brightness": 0.05     # 明るさ
@@ -263,14 +263,14 @@ def calculate_total_sns_score(image, detections):
     return round(total_score)
 
 def get_rank(score):
-    #総合スコアに応じてランクを返す(甘めの採点)
-    if score >= 85:
+    #総合スコアに応じてランクを返す(さらに甘めの採点)
+    if score >= 75:
         return "S（神レベルの映え写真！）"
-    elif score >= 70:
+    elif score >= 60:
         return "A（かなり映えてます！）"
-    elif score >= 55:
+    elif score >= 45:
         return "B（良い感じの映え写真）"
-    elif score >= 40:
+    elif score >= 30:
         return "C（まあまあ映えてます）"
     else:
         return "D（もう少し工夫してみよう）"
